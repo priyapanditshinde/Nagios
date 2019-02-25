@@ -1,0 +1,81 @@
+#playbook to install and configure Nagios server
+---
+
+#download and install epel-release rpm
+
+- name: install the epel rpm from a remote repo
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: present
+
+#installing apache and php
+
+- name: install the latest version of Apache
+  yum:
+    name: httpd
+    state: latest
+
+- name: Start service httpd, if not started
+  service:
+    name: httpd
+    state: started
+
+- name: Enable service httpd, and not touch the state
+  service:
+    name: httpd
+    enabled: yes
+
+- name: install the latest version of PHP
+  yum:
+    name: php
+    state: latest
+
+- name: Restart service httpd, in all cases
+  service:
+    name: httpd
+    state: restarted
+
+#installing required packages
+
+- name: Install a list of required packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: 
+    - gcc
+    - glibc
+    - glibc-common
+    - gd
+    - make
+    - net-snmp
+    - openssl-devel
+    - xinetd
+    - unzip
+    
+#create a user and group that will run the Nagios process
+
+- name: create a group
+  group:
+    name: nagcmd
+    state: present
+
+- name: Add the user 'nagios' in a primary group of 'nagcmd'
+  user:
+    name: nagios
+    group: nagcmd
+
+#installing Nagios
+
+- name: Download the stable release of Nagios core
+  shell: curl -L -O https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.4.3.tar.gz
+
+- name: Creates directory to extract the tar
+  file:
+    path: /home/ec2-user/nagios
+    state: directory
+ 
+- name: Extract the tar into ~
+  unarchive:
+    src: /home/ec2-user/nagios-4.4.3.tar.gz
+    dest: /home/ec2-user/nagios
+    remote_src: yes
