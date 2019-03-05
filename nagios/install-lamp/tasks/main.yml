@@ -1,0 +1,65 @@
+---
+# tasks file for install-lamp
+
+- name: install latest version of apache
+  yum: 
+   name: httpd
+   state: latest
+
+- name: Start service httpd, if not started
+  service:
+    name: httpd
+    state: started
+
+- name: Enable service httpd, and not touch the state
+  service:
+    name: httpd
+    enabled: yes
+
+- name: install the latest version of Mariadb
+  yum:
+   name: mariadb-server,mariadb
+   state: latest
+
+- name: Start service mariadb, if not started
+  service:
+    name: mariadb
+    state: started
+
+- name: Enable service mariadb, and not touch the state
+  service:
+    name: mariadb
+    enabled: yes
+
+- name: install the latest version of PHP
+  yum:
+   name: php,php-mysql
+   state: latest
+
+- name: Restart service httpd, in all cases
+  service:
+    name: httpd
+    state: restarted
+
+- name: configure firewall
+  yum:
+   name: firewalld
+   state: latest
+
+- name: Start firewall, if not started
+  service:
+    name: firewalld
+    state: started
+
+- name: Enable firewall, and not touch the state
+  service:
+    name: firewalld
+    enabled: yes
+
+- name: configure firewall to allow HTTP and HTTPS traffic
+  command: sudo firewall-cmd --permanent --zone=public --add-service={{ item }}
+  with_items:
+  - http 
+  - https
+  command: sudo firewall-cmd --reload
+

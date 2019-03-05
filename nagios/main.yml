@@ -1,0 +1,8 @@
+---
+
+- name: install and configure Nagios
+  hosts: localhost
+  become: yes
+  
+  roles:
+    - install-lamp
