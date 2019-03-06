@@ -1,0 +1,55 @@
+---
+# tasks file for install-nagios
+
+#installing required packages
+
+- name: Install a list of required packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: 
+    - gcc
+    - glibc
+    - glibc-common
+    - gd
+#    - gd-devel
+    - make
+    - net-snmp
+    - openssl-devel
+    - xinetd
+    - unzip
+
+#create a user and group that will run the Nagios process
+
+- name: create a group
+  group:
+    name: nagcmd
+    state: present
+
+- name: Add the user 'nagios' in a primary group of 'nagcmd'
+  user:
+    name: nagios
+    group: nagcmd
+
+#installing Nagios
+
+#- name: Download the stable release of Nagios core
+#  shell: curl -L -O https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.4.3.tar.gz
+#  args:
+#    chdir: ~/
+
+- name: download nagios
+  get_url:
+    url: https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.4.3.tar.gz
+    dest: /home/ec2-user/
+
+- name: Creates directory to extract the tar
+  file:
+    path: /home/ec2-user/nagios_package
+    state: directory
+ 
+- name: Extract the tar into ~
+  unarchive:
+    src: /home/ec2-user/nagios-4.4.3.tar.gz
+    dest: /home/ec2-user/nagios_package
+    remote_src: yes
