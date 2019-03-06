@@ -26,10 +26,116 @@
     name: mariadb
     state: started
 
+#- name: Adds Python MySQL support on RedHat/CentOS
+#  yum: name=MySQL-python state=present
+#  when: ansible_os_family == 'RedHat'
+
+#- name: Sets the root password 
+#  mysql_user: user=root password="Canopy1!" host=localhost
+
+#- name: Deletes anonymous MySQL server user for ansible_fqdn
+#  mysql_user: user="" host="{{ ansible_fqdn }}" state="absent"
+
+#- name: Deletes anonymous MySQL server user for localhost
+#  mysql_user: user="" state="absent"
+
+#- name: Secures the MySQL root user for IPV6 localhost (::1)
+#  mysql_user: user="root" password="{{ mysql_root_password }}" host="::1"
+
+#- name: Secures the MySQL root user for IPV4 localhost (127.0.0.1)
+#  mysql_user: user="root" password="{{ mysql_root_password }}" host="127.0.0.1"
+
+#- name: Secures the MySQL root user for localhost domain (localhost)
+#  mysql_user: user="root" password="{{ mysql_root_password }}" host="localhost"
+
+#- name: Secures the MySQL root user for server_hostname domain
+#  mysql_user: user="root" password="{{ mysql_root_password }}" host="{{ ansible_fqdn }}"
+
+#- name: Removes the MySQL test database
+#  mysql_db: db=test state=absent
+
+- name: delete anonymous MySQL server user for localhost
+  action: mysql_user user="" state="absent"
+ 
+- name: remove the MySQL test database
+  action: mysql_db db=test state=absent
+   
+   
+- name: Change root user password on first run
+  mysql_user: login_user=root
+              login_password="Canopy1!"
+              name=root
+              password="Canopy1!"
+              priv=*.*:ALL,GRANT
+              host={{ item }}
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+
 - name: Enable service mariadb, and not touch the state
   service:
     name: mariadb
     enabled: yes
+
+#- name: Add the repository for MySql 5.6
+#  become: yes
+#  command: add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe'
+
+#- name: Update
+#  become: yes
+#  command: apt-get update
+
+#- name: Install mysql
+#  apt: pkg={{ item }} state=installed
+#  become: true
+#  with_items:    
+#    - mysql-server-5.6
+#    - mysql-client-5.6
+#    - python-mysqldb
+#    - libmysqlclient-dev
+
+#- name : Ensure mysql started
+#  become: yes
+#  service: name=mysql state=started enabled=yes
+
+#- name: Update MySQL root password for all root accounts
+#  mysql_user: name=root 
+#              host={{ item }} 
+#              password=root123
+#              login_user=root
+#              login_password=""
+#              state=present
+#  with_items:
+#    - 127.0.0.1
+#    - ::1
+#    - localhost
+
+#- name: Update the software package repository
+#  apt:
+#   update_cache: yes
+
+#- name: Install MySQL
+#  package:
+#    name: "{{ item }}"
+#    state: latest
+#  with_items:
+#    - mysql-server
+#    - mysql-client
+#    - python-mysqldb 
+
+#- name: Start the server
+#  service:
+#    name: mysql
+#    state: started
+#- wait_for:
+#    port: 3306
+#- mysql_user:
+#    name: guest
+#    password: '*F7B659FE10CA9FAC576D358A16CC1BC646762FB2'
+#    encrypted: yes
+#    priv: '*.*:ALL,GRANT'
+#    state: present
 
 - name: install the latest version of PHP
   yum:
