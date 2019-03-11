@@ -1,0 +1,4 @@
+---
+# vars file for nagios_client
+
+nagios_server: 172.31.25.148

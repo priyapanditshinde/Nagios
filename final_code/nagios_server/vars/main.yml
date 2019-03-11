@@ -1,0 +1,7 @@
+---
+# vars file for nagios_server
+
+nagios_alert_email_id: shide.priya113@gmail.com 
+nagiosadmin_password: nagiosadmin
+nagios_client_details:
+  - { hostname: "nagios_client", alias: "nagios_client", address: 13.58.154.247, services: [ "ping", "ssh" ] }  

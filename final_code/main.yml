@@ -1,0 +1,13 @@
+---
+
+- name: install and configure Nagios server
+  hosts: localhost
+  become: yes
+  roles:
+    - nagios_server
+
+- name: install and configure Nagios client
+  hosts: nagios-client
+  roles:
+    - nagios_client
+
